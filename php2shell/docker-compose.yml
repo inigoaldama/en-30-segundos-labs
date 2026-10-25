@@ -1,0 +1,20 @@
+# Lab PHP2Shell — nivel detección. Dos contenedores que solo ejecutan el comprobador:
+#   vulnerable → PHP 8.4.16 (anterior al parche 8.4.27) + upload_progress activo
+#   parcheado  → PHP 8.4.27 (primera versión segura de la rama 8.4) + upload_progress desactivado
+# No exponen puertos ni sirven nada: arrancan, comprueban y terminan. Uso: ver README.md.
+services:
+  vulnerable:
+    image: php:8.4.16-cli
+    container_name: php2shell-vulnerable
+    working_dir: /lab
+    volumes: ["./:/lab:ro"]
+    # upload_progress activo: así el comprobador detecta también el vector del tercer aviso.
+    command: ["sh", "-c", "export PHP_INI_SCAN_DIR=; echo 'session.upload_progress.enabled=1' > /tmp/up.ini; PHPRC=/tmp/up.ini sh comprobar.sh; exit 0"]
+
+  parcheado:
+    image: php:8.4.27-cli
+    container_name: php2shell-parcheado
+    working_dir: /lab
+    volumes: ["./:/lab:ro"]
+    # versión segura y upload_progress apagado: el comprobador debe dar "a salvo".
+    command: ["sh", "-c", "echo 'session.upload_progress.enabled=0' > /tmp/up.ini; PHPRC=/tmp/up.ini sh comprobar.sh; exit 0"]

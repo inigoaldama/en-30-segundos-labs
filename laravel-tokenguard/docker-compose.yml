@@ -1,0 +1,29 @@
+# Lab Laravel TokenGuard — efecto completo, en aislado.
+#   web → PHP+Apache sirviendo la maqueta en http://localhost:8080
+#   db  → MySQL 8.4 con tres usuarios de juguete
+# Sin puertos de MySQL expuestos al exterior; la web solo escucha en localhost. Uso: ver README.md.
+services:
+  web:
+    image: php:8.3.36-apache
+    container_name: tokenguard-web
+    depends_on:
+      db: {condition: service_healthy}
+    ports: ["127.0.0.1:8080:80"]
+    volumes: ["./app:/var/www/html:ro"]
+    command: >
+      bash -c "docker-php-ext-install pdo_mysql >/dev/null 2>&1 && apache2-foreground"
+
+  db:
+    image: mysql:8.4
+    container_name: tokenguard-db
+    environment:
+      MYSQL_DATABASE: lab
+      MYSQL_USER: lab
+      MYSQL_PASSWORD: lab
+      MYSQL_ROOT_PASSWORD: root
+    volumes: ["./init.sql:/docker-entrypoint-initdb.d/init.sql:ro"]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-plab", "-ulab"]
+      interval: 3s
+      timeout: 3s
+      retries: 20

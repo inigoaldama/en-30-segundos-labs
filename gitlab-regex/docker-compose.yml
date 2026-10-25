@@ -1,0 +1,15 @@
+# Lab GitLab regex — nivel detección. Comprueba, para varias versiones de ejemplo, cuáles están
+# parcheadas contra CVE-2026-110264 y cuáles no. No levanta GitLab ni dispara nada: solo compara
+# versiones con comprobar.sh, en un contenedor mínimo. Uso: ver README.md.
+services:
+  demo:
+    image: alpine:3.20
+    container_name: gitlab-regex-demo
+    working_dir: /lab
+    volumes: ["./:/lab:ro"]
+    command: >
+      sh -c '
+        for v in 19.4.2 19.3.4 18.11.13 19.5.1 17.9.0; do
+          echo; sh comprobar.sh "$$v" || true;
+        done
+      '

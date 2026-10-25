@@ -11,6 +11,7 @@ cada uno.
 | Lab | Fallo | Nivel |
 |---|---|---|
 | [laravel-tokenguard](laravel-tokenguard/) | CVE-2026-114509 | Efecto completo |
+| [gitlab-regex](gitlab-regex/) | CVE-2026-110264 / 97229 | Detección |
 | [php2shell](php2shell/) | CVE-2026-109618 / 109619 / 115560 | Detección y parcheo |
 
 Requisito común: Docker con Compose.
